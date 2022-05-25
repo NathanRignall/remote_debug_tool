@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "my-nextron-app",
+  "name": "Remote Debug Tool",
   "description": "My application description",
   "version": "1.0.0",
-  "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
+  "author": "Nathan Rignall <rignallnathan@gmail.com>",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "electron-serve": "^1.1.0",
-    "electron-store": "^8.0.1"
+    "electron-store": "^8.0.1",
+    "tunnel-ssh": "^4.1.6"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
