@@ -1,6 +1,6 @@
-import { app } from 'electron';
+import { app, ipcMain} from 'electron';
 import serve from 'electron-serve';
-import { createWindow } from './helpers';
+import { createWindow, dataHandler, sshHandler} from './helpers';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -30,3 +30,6 @@ if (isProd) {
 app.on('window-all-closed', () => {
   app.quit();
 });
+
+ipcMain.on('data', dataHandler);
+ipcMain.on('ssh', sshHandler);
