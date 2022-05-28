@@ -1,5 +1,6 @@
 import electron from "electron";
 import React from "react";
+import SystemModal from "../components/SystemModal/SystemModal";
 
 import TargetEntry from "../components/TargetEntry";
 
@@ -33,8 +34,6 @@ function Home() {
     },
   ];
 
-  // get list async fromn the backend
-
   const ListTargets = targets.map((target, index) => (
     <TargetEntry key={index} {...target} />
   ));
@@ -59,7 +58,26 @@ function Home() {
 
       <div className="max-w-xl mx-auto">{ListTargets}</div>
 
-      <button onClick={onClickWithIpc}>TEST SSH</button>
+      <div className="fixed bottom-5 right-5">
+        <SystemModal
+          className="bg-blue-600 inline-block px-8 py-3 rounded-lg cursor-pointer"
+          button="Add"
+          title="Add Connection"
+          save="Add"
+        >
+          Add Connection Body
+        </SystemModal>{" "}
+        <SystemModal
+          className="bg-gray-600 inline-block px-8 py-3 rounded-lg cursor-pointer"
+          button="Settings"
+          title="Settings"
+          save="Save"
+        >
+          Settings Body
+        </SystemModal>
+      </div>
+{/* 
+      <button onClick={onClickWithIpc}>TEST SSH</button> */}
     </>
   );
 }

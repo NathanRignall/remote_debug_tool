@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "Remote Debug Tool",
+  "name": "RemoteDebugTool",
   "description": "My application description",
   "version": "1.0.0",
   "author": "Nathan Rignall <rignallnathan@gmail.com>",
@@ -13,7 +13,9 @@
   "dependencies": {
     "electron-serve": "^1.1.0",
     "electron-store": "^8.0.1",
-    "tunnel-ssh": "^4.1.6"
+    "formik": "^2.2.9",
+    "tunnel-ssh": "^4.1.6",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
