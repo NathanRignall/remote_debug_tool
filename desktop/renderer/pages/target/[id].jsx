@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-import PowerButton from "../../components/PowerButton";
+import Button from "../../components/Button";
+import Header from "../../components/Header";
 
 export default function Target() {
   const router = useRouter();
@@ -10,19 +11,18 @@ export default function Target() {
   return (
     <>
       <div className="h-screen flex flex-col">
-        <div className="w-full flex bg-gray-700 py-3 px-6">
-          <div className="grow bg-gray-700 py-2">{id} </div>
+        <Header>
+          <div className="grow bg-gray-700 py-3">{id} </div>
 
-          <div className="">
+          <div>
+            <Button className="bg-gray-300 text-gray-900">GDB</Button>{" "}
+            <Button className="bg-gray-300 text-gray-900">Status</Button>{" "}
             <Link href="/home">
-              <div className="bg-blue-600 inline-block px-8 py-3 rounded-lg cursor-pointer">
-                Back
-              </div>
+              <Button className="bg-blue-600 text-white">Back</Button>
             </Link>
           </div>
-        </div>
+        </Header>
 
-        {/* <div className="flex grow"> */}
         <div class="grow flex flex-col mx-2 my-3">
           <div className="grow w-full p-2 min-h-[15rem]">
             <div className="h-full bg-gray-800 text-gray-200 p-5 rounded-lg">
@@ -36,10 +36,7 @@ export default function Target() {
             </div>
           </div>
         </div>
-
-        {/* <div class="flex-none w-14 bg-gray-700">03</div> */}
       </div>
-      {/* </div> */}
     </>
   );
 }

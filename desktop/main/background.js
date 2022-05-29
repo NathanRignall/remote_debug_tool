@@ -1,6 +1,7 @@
 import { app, ipcMain} from 'electron';
 import serve from 'electron-serve';
-import { createWindow, dataHandler, sshHandler} from './helpers';
+import Store from 'electron-store';
+import { createWindow, sshHandler} from './helpers';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -31,5 +32,16 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
-ipcMain.on('data', dataHandler);
+const store = new Store({ name: 'targets' });
+
+ipcMain.on('get-targets', (event, arg) => {
+  event.returnValue = store.get('targets') || [];
+});
+
+ipcMain.on('add-target', (event, arg) => {
+  const targets = store.get('targets') || [];
+  targets.push(arg);
+  store.set('targets', targets);
+});
+
 ipcMain.on('ssh', sshHandler);
