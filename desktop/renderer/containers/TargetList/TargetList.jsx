@@ -16,7 +16,9 @@ const TargetEntry = (props) => {
 
       <div>
         <Link href={`/target/${props.id}`}>
+          <div>
           <Button className="bg-green-600 text-white">Test</Button>
+          </div>
         </Link>
       </div>
     </ListItem>

@@ -1,5 +1,5 @@
 const Background = () => (
-  <div class="fixed top-0 bottom-0 left-0 right-0 bg-black opacity-70 z-10"></div>
+  <div className="fixed top-0 bottom-0 left-0 right-0 bg-black opacity-70 z-10"></div>
 );
 
 const Body = (props) => <div className="min-h-[8rem]">{props.children}</div>;
@@ -19,7 +19,7 @@ const Modal = (props) => {
     <div>
       <Background onClick={close}/>
       <div className="fixed top-0 bottom-0 left-0 right-0 z-20 ">
-        <div class="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <div className="flex h-screen items-center">
             <div className="w-full bg-gray-900 rounded-lg overflow-hidden">
               {children}

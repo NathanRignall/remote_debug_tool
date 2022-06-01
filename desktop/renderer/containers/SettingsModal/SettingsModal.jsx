@@ -44,7 +44,7 @@ const SettingsModal = (props) => {
               >
                 Close
               </Button>
-              <Button className="bg-green-600 text-gray-300">Save</Button>
+              <Button className="bg-green-600 text-white">Save</Button>
             </Footer>
           </div>
         </Modal>

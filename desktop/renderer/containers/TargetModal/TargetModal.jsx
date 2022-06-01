@@ -13,7 +13,7 @@ const TargetModal = (props) => {
 
   return (
     <>
-      <Button onClick={handleShow} className="bg-blue-600 text-gray-300">
+      <Button onClick={handleShow} className="bg-blue-600 text-white">
         Add
       </Button>
 
@@ -44,7 +44,7 @@ const TargetModal = (props) => {
               >
                 Close
               </Button>
-              <Button className="bg-green-600 text-gray-300">Save</Button>
+              <Button className="bg-green-600 text-white">Save</Button>
             </Footer>
           </div>
         </Modal>
