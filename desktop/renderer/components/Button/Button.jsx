@@ -3,11 +3,11 @@ const classNames = (...classes) => {
 };
 
 const Button = (props) => {
-  const { children, className } = props;
+  const { children, className, onClick } = props;
 
   return (
     <div
-      onClick={props.onClick}
+      onClick={onClick}
       className={classNames(
         "inline-block px-8 py-3 rounded-lg cursor-pointer font-bold ",
         className

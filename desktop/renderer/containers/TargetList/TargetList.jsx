@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import Link from "next/link";
 
 import Button from "../../components/Button";
@@ -17,7 +16,7 @@ const TargetEntry = (props) => {
       <div>
         <Link href={`/target/${props.id}`}>
           <div>
-          <Button className="bg-green-600 text-white">Test</Button>
+            <Button className="bg-green-600 text-white">Test</Button>
           </div>
         </Link>
       </div>
@@ -26,9 +25,7 @@ const TargetEntry = (props) => {
 };
 
 const TargetList = (props) => {
-  const [targets, setTargets] = useState([
-    { name: "test2", host: "192.168.0.1", user: "pi" },
-  ]);
+  const { targets } = props;
 
   const ListTargets = targets.map((target, index) => (
     <TargetEntry key={index} {...target} />
