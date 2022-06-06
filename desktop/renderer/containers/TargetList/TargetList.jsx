@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import Button from "../../components/Button";
 import ListItem from "../../components/ListItem";
+import TargetModal from "../TargetModal";
 
 const TargetEntry = (props) => {
   return (
@@ -9,14 +10,19 @@ const TargetEntry = (props) => {
       <div className="flex-grow">
         <div className="text-xl text-gray-200">{props.name}</div>
         <div className="text-md text-blue-500">
-          {props.host} - {props.user}
+          {props.host} - {props.user} - {props.index}
         </div>
       </div>
 
       <div>
-        <Link href={`/target/${props.id}`}>
-          <div>
-            <Button className="bg-green-600 text-white">Test</Button>
+        <TargetModal
+          reloadTargets={props.reloadTargets}
+          edit={true}
+          {...props}
+        />
+        <Link href={`/target/${props.index}`}>
+          <div className="inline-block">
+            <Button className="bg-green-600 text-white">Connect</Button>
           </div>
         </Link>
       </div>
@@ -25,11 +31,13 @@ const TargetEntry = (props) => {
 };
 
 const TargetList = (props) => {
-  const { targets } = props;
+  const { reloadTargets, targets } = props;
 
-  const ListTargets = targets.map((target, index) => (
-    <TargetEntry key={index} {...target} />
-  ));
+  const ListTargets = targets.map((target, index) => {
+    return (
+      <TargetEntry reloadTargets={reloadTargets} key={index} index={index} {...target} />
+    );
+  });
 
   return <> {ListTargets} </>;
 };

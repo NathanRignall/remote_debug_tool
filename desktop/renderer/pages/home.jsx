@@ -23,12 +23,13 @@ function Home() {
         <div className="grow py-3">Remote Debug Tool</div>
 
         <div>
-          <TargetModal reloadTargets={reloadTargets} /> <SettingsModal />
+          <TargetModal reloadTargets={reloadTargets}  edit={false}/> 
+          <SettingsModal />
         </div>
       </Header>
 
       <div className="max-w-xl mx-auto">
-        <TargetList targets={targets} />
+        <TargetList reloadTargets={reloadTargets} targets={targets} />
       </div>
 
       <div className="fixed bottom-5 right-5"></div>

@@ -3,6 +3,8 @@ import serve from "electron-serve";
 import Store from "electron-store";
 import { createWindow } from "./helpers";
 
+import tunnel from "tunnel-ssh";
+
 let web_tunnel;
 let gdb_tunnel;
 
@@ -36,9 +38,15 @@ app.on("window-all-closed", () => {
 });
 
 const store = new Store({ name: "targets" });
+// store.set("targets", [])
 
 ipcMain.on("target-get", (event, arg) => {
   event.returnValue = store.get("targets") || [];
+});
+
+ipcMain.on("target-get-id", (event, arg) => {
+  const targets = store.get("targets") || [];
+  event.returnValue = targets[arg.index];
 });
 
 ipcMain.on("target-add", (event, arg) => {
@@ -47,32 +55,52 @@ ipcMain.on("target-add", (event, arg) => {
   store.set("targets", targets);
 });
 
+ipcMain.on("target-edit", (event, arg) => {
+  const targets = store.get("targets") || [];
+  targets[arg.index] = arg;
+  store.set("targets", targets);
+});
+
+ipcMain.on("target-delete", (event, arg) => {
+  const targets = store.get("targets") || [];
+  targets.splice(arg.index, 1)
+  store.set("targets", targets);
+});
+
+
 ipcMain.on("ssh-web-connect", (event, arg) => {
   const host = arg.host;
-  const username = arg.username;
-  const password = arg.password;
   const port = arg.port;
+  const user = arg.user;
+  const password = arg.password;
+
 
   web_tunnel = tunnel(
     {
       host: host,
-      username: username,
+      username: user,
       password: password,
       port: port,
-      dstPort: 80,
+      dstHost: '127.0.0.1',
+      dstPort: 4000,
+      localHost: '127.0.0.1',
       localPort: 3080,
       keepAlive: true,
     },
     (error, server) => {
+
       if (error) {
+        console.log(error);
         event.sender.send("ssh-web-connect-error");
       } else {
+        console.log("success");
         event.sender.send("ssh-web-connect-success");
       }
     }
   );
 
   web_tunnel.on("error", (error) => {
+    console.log(error);
     event.sender.send("ssh-web-error");
   });
 });
