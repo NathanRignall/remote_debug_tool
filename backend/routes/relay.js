@@ -29,3 +29,5 @@ router.post("/power1", (req, res) => {
     });
   });
 });
+
+module.exports = router;
