@@ -6,7 +6,9 @@ import { createWindow } from "./helpers";
 import tunnel from "tunnel-ssh";
 
 let web_tunnel;
+let web_tunnel_last = -1;
 let gdb_tunnel;
+let gdb_tunnel_last = -1;
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -67,13 +69,19 @@ ipcMain.on("target-delete", (event, arg) => {
   store.set("targets", targets);
 });
 
-
 ipcMain.on("ssh-web-connect", (event, arg) => {
   const host = arg.host;
   const port = arg.port;
   const user = arg.user;
   const password = arg.password;
+  const index = arg.index;
 
+  web_tunnel_last = index;
+
+  if (web_tunnel) {
+    console.log ("RESET");
+    web_tunnel.close();
+  }
 
   web_tunnel = tunnel(
     {
@@ -91,7 +99,7 @@ ipcMain.on("ssh-web-connect", (event, arg) => {
 
       if (error) {
         console.log(error);
-        event.sender.send("ssh-web-connect-error");
+        event.sender.send("ssh-web-error", {error: error.level});
       } else {
         console.log("success");
         event.sender.send("ssh-web-connect-success");
@@ -100,9 +108,25 @@ ipcMain.on("ssh-web-connect", (event, arg) => {
   );
 
   web_tunnel.on("error", (error) => {
-    console.log(error);
-    event.sender.send("ssh-web-error");
+    console.log(error.level);
+    if(error.level == "client-authentication") {
+      web_tunnel_last = -1;
+    }
+    event.sender.send("ssh-web-error", {error: error.level});
   });
+
+
+});
+
+ipcMain.on("ssh-web-connect-status", (event, arg) => {
+  const index = arg.index;
+
+  if (web_tunnel_last == index) {
+    event.returnValue = web_tunnel ? true : false;
+  } else {
+    event.returnValue = false;
+  }
+
 });
 
 ipcMain.on("ssh-gdb-connect", (event, arg) => {

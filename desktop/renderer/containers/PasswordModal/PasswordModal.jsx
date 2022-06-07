@@ -31,12 +31,14 @@ const PasswordModal = (props) => {
               port: port,
               user: user,
               password: values.password,
+              index: index,
             });
             ipcRenderer.send("ssh-web-connect", {
               host: host,
               port: port,
               user: user,
               password: values.password,
+              index: index,
             });
             setConnected(true);
           }}

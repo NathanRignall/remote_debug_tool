@@ -9,17 +9,28 @@ import Button from "../../components/Button";
 import Header from "../../components/Header";
 import StatusBox from "../../containers/StatusBox";
 import PasswordModal from "../../containers/PasswordModal";
+import SerialContainer from "../../containers/SerialContainer";
 
 const Main = (props) => {
-  const { index, name, host, port, user } = props;
+  const { children, socket, index, name, host, port, user } = props;
 
-  const [socket, setSocket] = useState(null);
+  const [packets, setPackets] = useState([]);
 
   useEffect(() => {
-    const newSocket = io(`http://localhost:3080`);
-    setSocket(newSocket);
-    return () => newSocket.close();
-  }, [setSocket]);
+    const serialListener = (packet) => {
+      setPackets((oldArray) => [...oldArray, packet]);
+    };
+
+    if (socket) {
+      socket.on("serial", serialListener);
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("serial", serialListener);
+      }
+    };
+  }, [socket]);
 
   return (
     <>
@@ -47,19 +58,12 @@ const Main = (props) => {
         </Header>
 
         <div className="grow flex flex-col mx-2 my-3">
-          <div className="w-full p-2 "></div>
-          <div className="grow w-full p-2 min-h-[15rem]">
-            <div className="h-full bg-gray-800 text-gray-200 p-5 rounded-lg">
-              SOME DATA HERE
-            </div>
-          </div>
+          <SerialContainer packets={packets} port="ttyACM0" />
 
-          <div className="grow w-full p-2 min-h-[15rem]">
-            <div className="h-full bg-gray-800 text-gray-200 p-5 rounded-lg">
-              SOME DATA HERE
-            </div>
-          </div>
+          <SerialContainer packets={packets} port="ttyACM1" />
         </div>
+
+        {children}
       </div>
     </>
   );
@@ -78,11 +82,29 @@ export default function Target() {
 
   const reloadTarget = () => {
     setTarget(ipcRenderer.sendSync("target-get-id", { index: id }));
+    setConnected(ipcRenderer.sendSync("ssh-web-connect-status", { index: id }));
   };
 
-  if (connected) {
-    return <Main {...target} />;
-  } else {
-    return <PasswordModal setConnected={setConnected} {...target} />;
-  }
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const newSocket = io(`http://localhost:3080`);
+    setSocket(newSocket);
+
+    newSocket.on("connect_failed", function () {
+      console.log("Sorry, there seems to be an issue with the connection!");
+    });
+
+    return () => newSocket.close();
+  }, [setSocket]);
+
+  return (
+    <>
+      <Main socket={socket} {...target}>
+        {connected ? null : (
+          <PasswordModal setConnected={setConnected} index={id} {...target} />
+        )}
+      </Main>
+    </>
+  );
 }
