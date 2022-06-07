@@ -6,28 +6,40 @@ const cors = require("cors");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const socketio = require("socket.io");
-const SerialPort = require("serialport");
-const Readline = require("@serialport/parser-readline");
+const serialport = require("serialport");
+const SerialPort = serialport.SerialPort;
+const { ReadlineParser } = require('@serialport/parser-readline')
 
 const port_array = [];
 const serial_array = [];
 
 SerialPort.list().then(
   (ports) => ports.forEach((port, index) => {
-    console.log(port.path)
-    port_array[index] = new SerialPort(port.path, { baudRate: 115200 });
-    serial_array[index] = port_array[index].pipe(new Readline({ delimiter: "\n" }));
-    serial_array[index].on("data", (data) => {
-      let packet = {
-        uuid: uuidv4(),
-        data: data,
-        port: path.basename(port.path),
-      }
-      io.emit("serial", packet);
-    });
+
+    if (port.path != "/dev/ttyAMA0" & port.path != "/dev/ttyS0") {
+      console.log(port.path)
+      port_array[index] = new SerialPort({ path: port.path, baudRate: 115200 });
+      serial_array[index] = port_array[index].pipe(new ReadlineParser({ delimiter: "\n" }));
+      serial_array[index].on("data", (data) => {
+        console.log({
+          uuid: uuidv4(),
+          data: data,
+          port: path.basename(port.path),
+        })
+        io.emit("serial", {
+          uuid: uuidv4(),
+          data: data,
+          port: path.basename(port.path),
+        });
+      });
+    }
   }),
   (err) => console.log(err)
-);
+).then(() => {
+  console.log(port_array.length);
+  console.log(serial_array.length);
+});
+
 
 var app = express();
 
