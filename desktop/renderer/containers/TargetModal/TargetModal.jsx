@@ -16,7 +16,7 @@ const TargetSchema = Yup.object().shape({
 
 const TargetModal = (props) => {
   // get props
-  const { reloadTargets } = props;
+  const { reloadTargets, edit, index, name, host, port, user } = props;
 
   // contain the state of the modal
   const [show, setShow] = useState(false);
@@ -25,28 +25,53 @@ const TargetModal = (props) => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const handleDelete = () => {
+    ipcRenderer.send("target-delete", {
+      index: index,
+    });
+
+    reloadTargets();
+    handleClose();
+  };
+
   return (
-    <>
-      <Button onClick={handleShow} className="bg-blue-600 text-white">
-        Add
+    <div className="inline-block">
+      <Button onClick={handleShow} className="bg-blue-600 text-white mr-2">
+        {edit ? "Edit" : "Add"}
       </Button>
 
       {show ? (
         <Modal>
-          <Header>Add Connection</Header>
+          <Header>{edit ? "Edit" : "Add"} Connection</Header>
 
           <Formik
             initialValues={{
-              name: "",
-              host: "",
-              port: 22,
-              user: "",
+              name: name ? name : "",
+              host: host ? host : "",
+              port: port ? port : 22,
+              user: user ? user : "",
             }}
             validationSchema={TargetSchema}
             onSubmit={(values) => {
-              ipcRenderer.send("target-add", values);
+              if (edit === false) {
+                ipcRenderer.send("target-add", {
+                  name: values.name,
+                  host: values.host,
+                  port: values.port,
+                  user: values.user,
+                });
+              } else {
+                ipcRenderer.send("target-edit", {
+                  name: values.name,
+                  host: values.host,
+                  port: values.port,
+                  user: values.user,
+                  index: index,
+                });
+              }
 
               reloadTargets();
+              handleClose();
             }}
           >
             {({ errors, touched, handleSubmit }) => (
@@ -99,10 +124,16 @@ const TargetModal = (props) => {
                 <Footer>
                   <Button
                     onClick={handleClose}
-                    className="bg-gray-300 text-gray-900"
+                    className="bg-gray-300 text-gray-900 mr-2"
                   >
                     Close
                   </Button>
+                  {edit ? <Button
+                    onClick={handleDelete}
+                    className="bg-red-600 text-white mr-2"
+                  >
+                    Delete
+                  </Button> : null}
                   <Button
                     onClick={handleSubmit}
                     className="bg-green-600 text-white"
@@ -115,7 +146,7 @@ const TargetModal = (props) => {
           </Formik>
         </Modal>
       ) : null}
-    </>
+    </div>
   );
 };
 
