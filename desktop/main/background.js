@@ -36,7 +36,16 @@ if (isProd) {
 })();
 
 app.on("window-all-closed", () => {
+  if (web_tunnel) {
+    web_tunnel.close();
+  }
+
+  // if (gdb_tunnel) {
+  //   gdb_tunnel.close();
+  // }
+
   app.quit();
+
 });
 
 const store = new Store({ name: "targets" });
@@ -79,7 +88,7 @@ ipcMain.on("ssh-web-connect", (event, arg) => {
   web_tunnel_last = index;
 
   if (web_tunnel) {
-    console.log ("RESET");
+    console.log("RESET");
     web_tunnel.close();
   }
 
@@ -99,7 +108,7 @@ ipcMain.on("ssh-web-connect", (event, arg) => {
 
       if (error) {
         console.log(error);
-        event.sender.send("ssh-web-error", {error: error.level});
+        event.sender.send("ssh-web-error", { error: error.level });
       } else {
         console.log("success");
         event.sender.send("ssh-web-connect-success");
@@ -109,10 +118,10 @@ ipcMain.on("ssh-web-connect", (event, arg) => {
 
   web_tunnel.on("error", (error) => {
     console.log(error.level);
-    if(error.level == "client-authentication") {
+    if (error.level == "client-authentication") {
       web_tunnel_last = -1;
     }
-    event.sender.send("ssh-web-error", {error: error.level});
+    event.sender.send("ssh-web-error", { error: error.level });
   });
 
 

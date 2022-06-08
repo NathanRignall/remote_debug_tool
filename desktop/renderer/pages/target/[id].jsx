@@ -10,6 +10,7 @@ import Header from "../../components/Header";
 import StatusBox from "../../containers/StatusBox";
 import PasswordModal from "../../containers/PasswordModal";
 import SerialContainer from "../../containers/SerialContainer";
+import PowerButton from "../../containers/PowerButton";
 
 const Main = (props) => {
   const { children, socket, index, name, host, port, user } = props;
@@ -48,6 +49,7 @@ const Main = (props) => {
                 socket ? (socket.connected ? true : false) : false
               }
             />{" "}
+            <PowerButton/>{" "}
             <Button className="bg-gray-300 text-gray-900">GDB</Button>{" "}
             <Link href="/home">
               <div className="inline-block">

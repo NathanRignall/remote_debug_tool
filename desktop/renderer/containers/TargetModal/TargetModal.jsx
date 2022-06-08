@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ipcRenderer } from "electron";
 
 import { Formik, Form, Field } from "formik";
