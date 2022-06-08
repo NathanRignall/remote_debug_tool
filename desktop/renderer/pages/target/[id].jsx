@@ -11,6 +11,7 @@ import StatusBox from "../../containers/StatusBox";
 import PasswordModal from "../../containers/PasswordModal";
 import SerialContainer from "../../containers/SerialContainer";
 import PowerButton from "../../containers/PowerButton";
+import GDBPopOver from "../../containers/GDBPopOver";
 
 const Main = (props) => {
   const { children, socket, index, name, host, port, user } = props;
@@ -33,11 +34,21 @@ const Main = (props) => {
     };
   }, [socket]);
 
+  const [GDBInfo, setGDBInfo] = useState(false);
+
+  const handleCloseGDB = () => setGDBInfo(false);
+  const handleShowGDB = () => setGDBInfo(true);
+
+  const toggleGDBInfo = () => {
+    setGDBInfo(!GDBInfo);
+    console.log("toggle gdb!");
+  };
+
   return (
     <>
       <div className="h-screen flex flex-col">
         <Header>
-          <div className="grow bg-gray-700 py-3">
+          <div className="grow bg-gray-700 text-xl font-bold my-auto">
             {name}{" "}
             {socket ? (socket.connected ? "connected" : "not connected") : null}
           </div>
@@ -49,8 +60,15 @@ const Main = (props) => {
                 socket ? (socket.connected ? true : false) : false
               }
             />{" "}
-            <PowerButton/>{" "}
-            <Button className="bg-gray-300 text-gray-900">GDB</Button>{" "}
+            <PowerButton />{" "}
+            <div className="inline-block">
+              <Button
+                onClick={toggleGDBInfo}
+                className={GDBInfo ? "bg-gray-300 text-gray-900" : "bg-gray-600 text-gray-300"}
+              >
+                GDB Info
+              </Button>
+            </div>{" "}
             <Link href="/home">
               <div className="inline-block">
                 <Button className="bg-blue-600 text-white">Back</Button>
@@ -59,10 +77,22 @@ const Main = (props) => {
           </div>
         </Header>
 
-        <div className="grow flex flex-col mx-2 my-3">
-          <SerialContainer packets={packets} port="ttyACM0" />
+        <div className="gow flex h-full p-2">
+          <div className="grow flex flex-col ">
+            <SerialContainer packets={packets} port="ttyACM0" />
 
-          <SerialContainer packets={packets} port="ttyACM1" />
+            <SerialContainer packets={packets} port="ttyACM1" />
+          </div>
+
+          {GDBInfo ? (
+            <div className="w-96">
+              <div className="w-full p-2 h-full">
+                <div className="h-full bg-gray-800 text-gray-200 rounded-lg relative p-5">
+                  <div className="text-center text-xl font-bold">GDB Info</div>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
 
         {children}
