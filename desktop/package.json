@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "RemoteDebugTool",
+  "name": "remote-debug-tool",
   "description": "My application description",
   "version": "1.0.0",
   "author": "Nathan Rignall <rignallnathan@gmail.com>",

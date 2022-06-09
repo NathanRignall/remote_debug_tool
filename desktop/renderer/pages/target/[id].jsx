@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ipcRenderer } from "electron";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Head from "next/head";
 
 import { io } from "socket.io-client";
 
@@ -50,6 +51,11 @@ const Main = (props) => {
 
   return (
     <>
+      <Head>
+        <title>Remote Debug</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+
       <div className="h-screen flex flex-col">
         {/* Page header */}
         <Header>

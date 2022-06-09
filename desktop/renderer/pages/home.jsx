@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ipcRenderer } from "electron";
+import Head from "next/head";
 
 import TargetList from "../containers/TargetList";
 import SettingsModal from "../containers/SettingsModal";
@@ -23,6 +24,12 @@ function Home() {
 
   return (
     <>
+      {/* Page title */}
+      <Head>
+        <title>Remote Debug</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+
       {/* Page Header */}
       <Header>
         {/* Title */}
