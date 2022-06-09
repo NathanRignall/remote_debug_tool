@@ -75,6 +75,7 @@ export default function createWindow(windowName, options) {
       webSecurity: false,
       ...options.webPreferences,
     },
+    autoHideMenuBar: true,
   });
 
   win.on('close', saveState);
