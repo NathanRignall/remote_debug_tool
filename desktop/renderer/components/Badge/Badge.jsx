@@ -1,3 +1,4 @@
+// function to join class names together
 const classNames = (...classes) => {
   return classes.filter(Boolean).join(" ");
 };
