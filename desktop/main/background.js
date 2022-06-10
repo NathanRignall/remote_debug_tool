@@ -10,6 +10,8 @@ let web_tunnel_last = -1;
 let gdb_tunnel;
 let gdb_tunnel_last = -1;
 
+const store = new Store({ name: "targets" });
+
 const isProd = process.env.NODE_ENV === "production";
 
 if (isProd) {
@@ -48,8 +50,8 @@ app.on("window-all-closed", () => {
 
 });
 
-const store = new Store({ name: "targets" });
-// store.set("targets", [])
+/// 
+
 
 ipcMain.on("target-get", (event, arg) => {
   event.returnValue = store.get("targets") || [];

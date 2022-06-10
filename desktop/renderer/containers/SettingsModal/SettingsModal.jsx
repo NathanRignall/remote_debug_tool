@@ -21,29 +21,18 @@ const SettingsModal = (props) => {
       {/* Actually display the modal component */}
       {show ? (
         <Modal>
-          <Header>Test</Header>
+          <Header>Settings</Header>
 
           <div className="px-10 py-4">
             <Body>
-              <input
-                type="text"
-                className="form-input w-full px-4 py-2 mt-2 rounded-lg text-gray-300 bg-gray-800 "
-              />
-              <input
-                type="text"
-                className="form-input w-full px-4 py-2  mt-2  rounded-lg text-gray-300 bg-gray-800 "
-              />
-              <input
-                type="text"
-                className="form-input w-full px-4 py-2  mt-2  rounded-lg text-gray-300 bg-gray-800 "
-              />
+              Options Here
             </Body>
 
             <Footer>
               {/* Close Button */}
               <Button
                 onClick={handleClose}
-                className="bg-gray-300 text-gray-900"
+                className="bg-gray-300 text-gray-900 mr-2 "
               >
                 Close
               </Button>

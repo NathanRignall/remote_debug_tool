@@ -40,7 +40,7 @@ const Main = (props) => {
     };
   }, [socket]);
 
-  // hook to state if the GDB info box is open or not
+  // hook to state of the GDB info box is open or not
   const [GDBInfo, setGDBInfo] = useState(false);
 
   // toggle the GDB info box open and close
@@ -48,6 +48,13 @@ const Main = (props) => {
     setGDBInfo(!GDBInfo);
     console.log("toggle gdb!");
   };
+
+  // hook to state if the GDB info box is open or not
+  const [GDBState, setGDBState] = useState(false);
+
+  // set the state of the GDB
+  const handleStart = () => setGDBState(true);
+  const handleStop = () => setGDBState(false);
 
   return (
     <>
@@ -61,8 +68,7 @@ const Main = (props) => {
         <Header>
           {/* Title */}
           <div className="grow bg-gray-700 text-xl font-bold my-auto">
-            {name}{" "}
-            {socket ? (socket.connected ? "connected" : "not connected") : null}
+            {name}
           </div>
 
           {/* Action Buttons */}
@@ -114,15 +120,15 @@ const Main = (props) => {
                   </div>
 
                   <div className="grow p-5 my-4 rounded-lg bg-gray-900">
-                    Data
+                    Data from console
                   </div>
 
                   <div>
                     <div className="inline-block">
-                      <Button className="bg-green-600 text-white">Start</Button>
+                      <Button onClick={handleStart} className={GDBState ? "bg-gray-600 text-gray-300" : "bg-green-600 text-white"}>Start</Button>
                     </div>{" "}
                     <div className="inline-block">
-                      <Button className="bg-gray-600 text-gray-300">
+                      <Button onClick={handleStop} className={GDBState ? "bg-red-600 text-white" : "bg-gray-600 text-gray-300"}>
                         Stop
                       </Button>
                     </div>{" "}

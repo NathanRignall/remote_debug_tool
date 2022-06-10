@@ -56,7 +56,7 @@ const SerialContainer = (props) => {
       <div className="h-full bg-gray-800 text-gray-200 rounded-lg relative overflow-hidden">
         {/* Arrival status icon */}
         {arrival ? (
-          <div className="absolute h-7 w-7 rounded-full bg-green-600 top-6 right-36 z-20" />
+          <div className="absolute h-7 w-7 rounded-full bg-green-600 top-6 right-[15.5rem] z-20" />
         ) : null}
 
         {/* Packets to display */}
@@ -76,10 +76,13 @@ const SerialContainer = (props) => {
             autoScroll
               ? "bg-blue-600 text-gray-100"
               : "bg-gray-900 text-gray-100"
-          } absolute px-3 py-1 rounded-full top-5 right-7 border-2 cursor-pointer`}
+          } absolute px-3 py-1 rounded-lg top-5 right-7 border-2 cursor-pointer`}
         >
           Auto Scroll
         </div>
+
+        {/* Port name */}
+        <div className="bg-gray-900 absolute px-3 py-1 rounded-full top-5 right-36 border-2 ">{props.port}</div>
       </div>
     </div>
   );
