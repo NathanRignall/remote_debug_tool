@@ -13,6 +13,7 @@ const { ReadlineParser } = require('@serialport/parser-readline')
 const port_array = [];
 const serial_array = [];
 
+// get all the serial ports and map them to the websocket
 SerialPort.list().then(
   (ports) => ports.forEach((port, index) => {
 
@@ -35,7 +36,7 @@ SerialPort.list().then(
   console.log(serial_array.length);
 });
 
-
+// load the app
 var app = express();
 
 // set the cors allowed all
@@ -47,6 +48,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// import the routes
 var relayRouter = require("./routes/relay");
 var gdbRouter = require("./routes/gdb");
 
@@ -67,6 +69,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// attach the routes
 app.use("/relay", relayRouter);
 app.use("/gdb", gdbRouter);
 

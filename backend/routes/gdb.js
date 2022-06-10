@@ -12,6 +12,7 @@ var status = {
 
 var scriptOutput = "";
 
+// start the GDB seession if not already running
 router.post("/start", (req, res) => {
     if (status.running) {
         res.status(500).json({
@@ -28,10 +29,9 @@ router.post("/start", (req, res) => {
         });
 
 
-
+        // load the listeners to the GDB instance
         child.stdout.setEncoding('utf8');
         child.stdout.on('data', function (data) {
-            //Here is where the output goes
 
             console.log('stdout: ' + data);
 
@@ -41,7 +41,6 @@ router.post("/start", (req, res) => {
 
         child.stderr.setEncoding('utf8');
         child.stderr.on('data', function (data) {
-            //Here is where the error output goes
 
             console.log('stderr: ' + data);
 
