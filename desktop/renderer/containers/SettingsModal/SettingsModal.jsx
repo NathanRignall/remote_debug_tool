@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import Modal, { Header, Body, Footer } from "../../components/Modal";
 import Button from "../../components/Button";
 
 const SettingsModal = (props) => {
-  // contain the state of the modal
+  // hook to contain the state of the modal
   const [show, setShow] = useState(false);
 
   // set the state of the modal
@@ -12,11 +12,13 @@ const SettingsModal = (props) => {
   const handleShow = () => setShow(true);
 
   return (
-    <>
+    <div className="inline-block">
+      {/* Modal open button */}
       <Button onClick={handleShow} className="bg-gray-600 text-gray-300">
         Settings
       </Button>
 
+      {/* Actually display the modal component */}
       {show ? (
         <Modal>
           <Header>Test</Header>
@@ -38,18 +40,20 @@ const SettingsModal = (props) => {
             </Body>
 
             <Footer>
+              {/* Close Button */}
               <Button
                 onClick={handleClose}
                 className="bg-gray-300 text-gray-900"
               >
                 Close
               </Button>
+              {/* Submit Button */}
               <Button className="bg-green-600 text-white">Save</Button>
             </Footer>
           </div>
         </Modal>
       ) : null}
-    </>
+    </div>
   );
 };
 

@@ -2,34 +2,70 @@ import { useState, useEffect } from "react";
 import { ipcRenderer } from "electron";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Head from "next/head";
 
 import { io } from "socket.io-client";
 
 import Button from "../../components/Button";
+import Badge from "../../components/Badge";
 import Header from "../../components/Header";
 import StatusBox from "../../containers/StatusBox";
 import PasswordModal from "../../containers/PasswordModal";
+import SerialContainer from "../../containers/SerialContainer";
+import PowerButton from "../../containers/PowerButton";
 
+// Whole application component
 const Main = (props) => {
-  const { index, name, host, port, user } = props;
+  // get the component props and expand the vars
+  const { children, socket, index, name, host, port, user } = props;
 
-  const [socket, setSocket] = useState(null);
+  // hook to contain all packets that have arrived
+  const [packets, setPackets] = useState([]);
 
+  // when the socket is set init the liseners
   useEffect(() => {
-    const newSocket = io(`http://localhost:3080`);
-    setSocket(newSocket);
-    return () => newSocket.close();
-  }, [setSocket]);
+    const serialListener = (packet) => {
+      setPackets((oldArray) => [...oldArray, packet]);
+    };
+
+    if (socket) {
+      socket.on("serial", serialListener);
+    }
+
+    // if the socket changes close the listener
+    return () => {
+      if (socket) {
+        socket.off("serial", serialListener);
+      }
+    };
+  }, [socket]);
+
+  // hook to state if the GDB info box is open or not
+  const [GDBInfo, setGDBInfo] = useState(false);
+
+  // toggle the GDB info box open and close
+  const toggleGDBInfo = () => {
+    setGDBInfo(!GDBInfo);
+    console.log("toggle gdb!");
+  };
 
   return (
     <>
+      <Head>
+        <title>Remote Debug</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+
       <div className="h-screen flex flex-col">
+        {/* Page header */}
         <Header>
-          <div className="grow bg-gray-700 py-3">
+          {/* Title */}
+          <div className="grow bg-gray-700 text-xl font-bold my-auto">
             {name}{" "}
             {socket ? (socket.connected ? "connected" : "not connected") : null}
           </div>
 
+          {/* Action Buttons */}
           <div>
             <StatusBox
               tunnelConnected={false}
@@ -37,7 +73,19 @@ const Main = (props) => {
                 socket ? (socket.connected ? true : false) : false
               }
             />{" "}
-            <Button className="bg-gray-300 text-gray-900">GDB</Button>{" "}
+            <PowerButton />{" "}
+            <div className="inline-block">
+              <Button
+                onClick={toggleGDBInfo}
+                className={
+                  GDBInfo
+                    ? "bg-gray-300 text-gray-900"
+                    : "bg-gray-600 text-gray-300"
+                }
+              >
+                GDB Info
+              </Button>
+            </div>{" "}
             <Link href="/home">
               <div className="inline-block">
                 <Button className="bg-blue-600 text-white">Back</Button>
@@ -46,43 +94,102 @@ const Main = (props) => {
           </div>
         </Header>
 
-        <div className="grow flex flex-col mx-2 my-3">
-          <div className="w-full p-2 "></div>
-          <div className="grow w-full p-2 min-h-[15rem]">
-            <div className="h-full bg-gray-800 text-gray-200 p-5 rounded-lg">
-              SOME DATA HERE
-            </div>
+        {/* Page Body */}
+        <div className="gow flex h-full p-2">
+          {/* Serial boxes */}
+          <div className="grow flex flex-col ">
+            <SerialContainer packets={packets} port="ttyACM0" />
+
+            <SerialContainer packets={packets} port="ttyACM1" />
           </div>
 
-          <div className="grow w-full p-2 min-h-[15rem]">
-            <div className="h-full bg-gray-800 text-gray-200 p-5 rounded-lg">
-              SOME DATA HERE
+          {/* GDB info box only open if button pressed */}
+          {GDBInfo ? (
+            <div className="w-96">
+              {/* test gdb window */}
+              <div className="w-full p-2 h-full ">
+                <div className="h-full bg-gray-800 text-gray-200 rounded-lg relative p-5 text-center flex flex-col">
+                  <div className="text-center text-xl font-bold">
+                    GDB Info <Badge className="bg-green-600">Running</Badge>
+                  </div>
+
+                  <div className="grow p-5 my-4 rounded-lg bg-gray-900">
+                    Data
+                  </div>
+
+                  <div>
+                    <div className="inline-block">
+                      <Button className="bg-green-600 text-white">Start</Button>
+                    </div>{" "}
+                    <div className="inline-block">
+                      <Button className="bg-gray-600 text-gray-300">
+                        Stop
+                      </Button>
+                    </div>{" "}
+                    <div className="inline-block">
+                      <Button className="bg-gray-600 text-gray-300">
+                        Reset
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
+
+        {children}
       </div>
     </>
   );
 };
 
+// Target application page
 export default function Target() {
+  // get the page url for target id
   const router = useRouter();
   const { id } = router.query;
 
+  // hook to contain the details of the currently open target
   const [target, setTarget] = useState(null);
+
+  // hook to contain the connection status
   const [connected, setConnected] = useState(false);
 
+  // when the target id changes reload
   useEffect(() => {
     reloadTarget();
   }, [id]);
 
+  // send command to backend to refresh target info
   const reloadTarget = () => {
     setTarget(ipcRenderer.sendSync("target-get-id", { index: id }));
+    setConnected(ipcRenderer.sendSync("ssh-web-connect-status", { index: id }));
   };
 
-  if (connected) {
-    return <Main {...target} />;
-  } else {
-    return <PasswordModal setConnected={setConnected} {...target} />;
-  }
+  // hook to contain the websocket
+  const [socket, setSocket] = useState(null);
+
+  // load the websocket
+  useEffect(() => {
+    const newSocket = io(`http://localhost:3080`);
+    setSocket(newSocket);
+
+    newSocket.on("connect_failed", function () {
+      console.log("Sorry, there seems to be an issue with the connection!");
+    });
+
+    return () => newSocket.close();
+  }, [setSocket]);
+
+  return (
+    <>
+      <Main socket={socket} {...target}>
+        {/* only show the password modal if not connected */}
+        {connected ? null : (
+          <PasswordModal setConnected={setConnected} index={id} {...target} />
+        )}
+      </Main>
+    </>
+  );
 }

@@ -72,8 +72,10 @@ export default function createWindow(windowName, options) {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+      webSecurity: false,
       ...options.webPreferences,
     },
+    autoHideMenuBar: true,
   });
 
   win.on('close', saveState);

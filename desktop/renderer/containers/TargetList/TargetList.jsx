@@ -31,8 +31,10 @@ const TargetEntry = (props) => {
 };
 
 const TargetList = (props) => {
+  // get the component props and expand the vars
   const { reloadTargets, targets } = props;
 
+  // map each target to UI
   const ListTargets = targets.map((target, index) => {
     return (
       <TargetEntry reloadTargets={reloadTargets} key={index} index={index} {...target} />
