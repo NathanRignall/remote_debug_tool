@@ -4,6 +4,7 @@ import useSWR, { mutate } from "swr";
 
 import Button from "../../components/Button";
 
+// swr fetcher for auto-reload
 const fetcher = async (url) => {
   const res = await fetch(url, { credentials: "include" });
 
@@ -20,21 +21,25 @@ const fetcher = async (url) => {
 };
 
 const PowerButton = () => {
+  // hook to contain the state of the relay
   const { data, error } = useSWR("http://localhost:3080/relay/1", fetcher);
 
+  // hook to state if loading or not 
   const [loading, setLoading] = useState(true);
 
-  const [power, setPower] = useState(0);
+  // hook to contain the actual loaded state of the power button
+  const [power, setPower] = useState(false);
 
+  // toggle the power states and send server request
   const togglePower = () => {
     if (power) {
       sendPower(1);
     } else {
       sendPower(0);
     }
-    console.log("toggle power!")
   };
 
+  // send the power request to the server
   const sendPower = (state) => {
     setLoading(true);
 
@@ -57,11 +62,10 @@ const PowerButton = () => {
       });
   };
 
+  // when the server data changes update the application state
   useEffect(() => {
     if (data) {
       setLoading(false);
-
-      console.log("daata ;)")
 
       if (data.state == 0) {
         setPower(1);
@@ -80,7 +84,10 @@ const PowerButton = () => {
           : "bg-green-600 text-white  w-48 text-center"
       }
     >
+      {/* Button text */}
       {power ? "Power Off" : "Power On"}{" "}
+
+      {/* Loading icon */}
       {loading ? (
         <div className="inline-block align-middle">
           <svg
