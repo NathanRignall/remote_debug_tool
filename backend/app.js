@@ -13,6 +13,7 @@ const { ReadlineParser } = require('@serialport/parser-readline')
 const port_array = [];
 const serial_array = [];
 
+// get all the serial ports and map them to the websocket
 SerialPort.list().then(
   (ports) => ports.forEach((port, index) => {
 
@@ -21,11 +22,6 @@ SerialPort.list().then(
       port_array[index] = new SerialPort({ path: port.path, baudRate: 115200 });
       serial_array[index] = port_array[index].pipe(new ReadlineParser({ delimiter: "\n" }));
       serial_array[index].on("data", (data) => {
-        console.log({
-          uuid: uuidv4(),
-          data: data,
-          port: path.basename(port.path),
-        })
         io.emit("serial", {
           uuid: uuidv4(),
           data: data,
@@ -40,7 +36,7 @@ SerialPort.list().then(
   console.log(serial_array.length);
 });
 
-
+// load the app
 var app = express();
 
 // set the cors allowed all
@@ -52,7 +48,9 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// import the routes
 var relayRouter = require("./routes/relay");
+var gdbRouter = require("./routes/gdb");
 
 // Create the http server
 const server = require("http").createServer(app);
@@ -60,7 +58,7 @@ const server = require("http").createServer(app);
 // Create the Socket IO server on the top of http server
 const io = socketio(server, {
   cors: {
-    origin: "http://localhost:8888",
+    origin: ["app://.*", "http://localhost:3080"],
     methods: ["GET", "POST"],
   },
 });
@@ -71,7 +69,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// attach the routes
 app.use("/relay", relayRouter);
+app.use("/gdb", gdbRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
